@@ -32,7 +32,7 @@ func (v *value) decode(rv reflect.Value) error {
 		return v.decodeBool(rv)
 	case valueKindNumber:
 		return v.decodeNumber(rv)
-	case valueKindString:
+	case valueKindPlain, valueKindString:
 		return v.decodeString(rv)
 	case valueKindSeq:
 		return v.decodeSeq(rv)
@@ -40,7 +40,7 @@ func (v *value) decode(rv reflect.Value) error {
 		return v.decodeMap(rv)
 	case valueKindNone, valueKindUndefined:
 		return nil
-	case valueKindBytes, valueKindPlain, valueKindInvalid:
+	case valueKindBytes, valueKindInvalid:
 	}
 
 	return &DecodeTypeError{
