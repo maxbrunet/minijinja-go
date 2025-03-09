@@ -1,0 +1,44 @@
+run:
+  timeout: 2m
+linters:
+  enable-all: true
+  disable:
+    # Deprectated
+    - tenv
+    # Inappropriate
+    - depguard
+    - exhaustruct
+    - funlen
+    - gochecknoglobals
+    - gochecknoinits
+    - lll
+    - nlreturn
+    - paralleltest
+    - varnamelen
+    - wsl
+linters-settings:
+  cyclop:
+    max-complexity: 20
+  gci:
+    sections:
+      - standard
+      - default
+      - prefix(github.com/maxbrunet/minijinja-go)
+  gofumpt:
+    extra-rules: true
+  goimports:
+    local-prefixes: github.com/maxbrunet/minijinja-go
+issues:
+  max-same-issues: 0
+  max-issues-per-linter: 0
+  exclude-use-default: false
+  exclude-rules:
+    - linters:
+        - errcheck
+      # Taken from the default exclusions (that are otherwise disabled above).
+      text: Error return value of .((os\.)?std(out|err)\..*|.*Close|.*Flush|os\.Remove(All)?|.*print(f|ln)?|os\.(Un)?Setenv). is not checked
+    - path: _test\.go
+      linters:
+        - wrapcheck
+output:
+  sort-results: true

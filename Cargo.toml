@@ -1,0 +1,11 @@
+[package]
+name = "minijinja-go"
+version = "0.0.0"
+edition = "2021"
+
+[dependencies]
+minijinja-cabi = { git = "https://github.com/mitsuhiko/minijinja.git", tag = "2.8.0" }
+
+[profile.release]
+lto = true
+codegen-units = 1
