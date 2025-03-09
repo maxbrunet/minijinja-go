@@ -365,6 +365,32 @@ func TestValue_NoneSlice(t *testing.T) {
 	isTrue(t, out != nil)
 }
 
+func TestValue_Plain(t *testing.T) {
+	t.Helper()
+
+	env := minijinja.NewEnvironment()
+	defer env.Close()
+
+	var out string
+
+	err := env.EvalExpr("debug", nil, &out)
+	isEqual(t, nil, err)
+	isEqual(t, "minijinja::functions::builtins::debug", out)
+}
+
+func TestValue_PlainInterface(t *testing.T) {
+	t.Helper()
+
+	env := minijinja.NewEnvironment()
+	defer env.Close()
+
+	var out any
+
+	err := env.EvalExpr("debug", nil, &out)
+	isEqual(t, nil, err)
+	isEqual(t, "minijinja::functions::builtins::debug", out)
+}
+
 func TestValue_Pointer(t *testing.T) {
 	var in, out *string
 
