@@ -59,6 +59,8 @@ func mustTestValue[T any](t *testing.T, in T, out *T) {
 }
 
 func TestValue_Bool(t *testing.T) {
+	t.Parallel()
+
 	var in, out bool
 
 	in = true
@@ -71,6 +73,8 @@ func TestValue_Bool(t *testing.T) {
 }
 
 func TestValue_BoolInterface(t *testing.T) {
+	t.Parallel()
+
 	var in, out any
 
 	in = true
@@ -83,6 +87,8 @@ func TestValue_BoolInterface(t *testing.T) {
 }
 
 func TestValue_NumberFloat32(t *testing.T) {
+	t.Parallel()
+
 	var in, out float32
 
 	in = 1.234
@@ -91,6 +97,8 @@ func TestValue_NumberFloat32(t *testing.T) {
 }
 
 func TestValue_NumberFloat64(t *testing.T) {
+	t.Parallel()
+
 	var in, out float64
 
 	in = 1.234
@@ -99,6 +107,8 @@ func TestValue_NumberFloat64(t *testing.T) {
 }
 
 func TestValue_NumberInt(t *testing.T) {
+	t.Parallel()
+
 	var in, out int
 
 	in = -123
@@ -107,6 +117,8 @@ func TestValue_NumberInt(t *testing.T) {
 }
 
 func TestValue_NumberInt32(t *testing.T) {
+	t.Parallel()
+
 	var in, out int32
 
 	in = -123
@@ -115,6 +127,8 @@ func TestValue_NumberInt32(t *testing.T) {
 }
 
 func TestValue_NumberInt64(t *testing.T) {
+	t.Parallel()
+
 	var in, out int64
 
 	in = -123
@@ -123,6 +137,8 @@ func TestValue_NumberInt64(t *testing.T) {
 }
 
 func TestValue_NumberInterface(t *testing.T) {
+	t.Parallel()
+
 	var in, out any
 
 	in = 123
@@ -138,6 +154,8 @@ func TestValue_NumberInterface(t *testing.T) {
 }
 
 func TestValue_NumberInterfaceWithMethods(t *testing.T) {
+	t.Parallel()
+
 	type myIf interface{ DoStuff() }
 	in := 123
 	var out myIf
@@ -152,6 +170,8 @@ func TestValue_NumberInterfaceWithMethods(t *testing.T) {
 }
 
 func TestValue_NumberUint(t *testing.T) {
+	t.Parallel()
+
 	var in, out uint
 
 	in = 123
@@ -160,6 +180,8 @@ func TestValue_NumberUint(t *testing.T) {
 }
 
 func TestValue_NumberUint32(t *testing.T) {
+	t.Parallel()
+
 	var in, out uint32
 
 	in = 123
@@ -168,6 +190,8 @@ func TestValue_NumberUint32(t *testing.T) {
 }
 
 func TestValue_NumberUint64(t *testing.T) {
+	t.Parallel()
+
 	var in, out uint64
 
 	in = 123
@@ -176,6 +200,8 @@ func TestValue_NumberUint64(t *testing.T) {
 }
 
 func TestValue_Map(t *testing.T) {
+	t.Parallel()
+
 	var in, out map[string]int
 
 	in = map[string]int{"foo": 1, "bar": 2}
@@ -191,6 +217,8 @@ func TestValue_Map(t *testing.T) {
 }
 
 func TestValue_MapAllocated(t *testing.T) {
+	t.Parallel()
+
 	in := map[string]int{"foo": 1, "bar": 2}
 	out := make(map[string]int, len(in))
 
@@ -206,6 +234,8 @@ func TestValue_MapAllocated(t *testing.T) {
 }
 
 func TestValue_MapNonEmpty(t *testing.T) {
+	t.Parallel()
+
 	in := map[string]int{"foo": 1, "bar": 2}
 	out := map[string]int{"foobar": 99, "barfoo": 98}
 
@@ -221,6 +251,8 @@ func TestValue_MapNonEmpty(t *testing.T) {
 }
 
 func TestValue_MapInterface(t *testing.T) {
+	t.Parallel()
+
 	var in, out map[any]any
 
 	in = map[any]any{
@@ -255,6 +287,8 @@ func TestValue_MapInterface(t *testing.T) {
 }
 
 func TestValue_MapInterface2(t *testing.T) {
+	t.Parallel()
+
 	var in map[any]any
 	var outI any
 
@@ -294,6 +328,8 @@ func TestValue_MapInterface2(t *testing.T) {
 }
 
 func TestValue_MapInterfaceWithMethods(t *testing.T) {
+	t.Parallel()
+
 	type myIf interface{ DoStuff() }
 	in := map[any]any{}
 	var out myIf
@@ -308,6 +344,8 @@ func TestValue_MapInterfaceWithMethods(t *testing.T) {
 }
 
 func TestValue_NonePointer(t *testing.T) {
+	t.Parallel()
+
 	var in, out *string
 
 	in = nil
@@ -318,6 +356,8 @@ func TestValue_NonePointer(t *testing.T) {
 }
 
 func TestValue_NoneNonPointer(t *testing.T) {
+	t.Parallel()
+
 	var in *int
 	out := 3
 
@@ -327,6 +367,8 @@ func TestValue_NoneNonPointer(t *testing.T) {
 }
 
 func TestValue_NoneInterface(t *testing.T) {
+	t.Parallel()
+
 	var in, out any
 
 	in = nil
@@ -336,6 +378,8 @@ func TestValue_NoneInterface(t *testing.T) {
 }
 
 func TestValue_NoneInterfaceWithMethods(t *testing.T) {
+	t.Parallel()
+
 	type myIf interface{ DoStuff() }
 	var in any
 	var out myIf
@@ -346,6 +390,8 @@ func TestValue_NoneInterfaceWithMethods(t *testing.T) {
 }
 
 func TestValue_NoneMap(t *testing.T) {
+	t.Parallel()
+
 	var in, out map[any]any
 
 	in = nil
@@ -356,6 +402,8 @@ func TestValue_NoneMap(t *testing.T) {
 }
 
 func TestValue_NoneSlice(t *testing.T) {
+	t.Parallel()
+
 	var in, out []any
 
 	in = nil
@@ -366,6 +414,8 @@ func TestValue_NoneSlice(t *testing.T) {
 }
 
 func TestValue_Plain(t *testing.T) {
+	t.Parallel()
+
 	t.Helper()
 
 	env := minijinja.NewEnvironment()
@@ -379,6 +429,8 @@ func TestValue_Plain(t *testing.T) {
 }
 
 func TestValue_PlainInterface(t *testing.T) {
+	t.Parallel()
+
 	t.Helper()
 
 	env := minijinja.NewEnvironment()
@@ -392,6 +444,8 @@ func TestValue_PlainInterface(t *testing.T) {
 }
 
 func TestValue_Pointer(t *testing.T) {
+	t.Parallel()
+
 	var in, out *string
 
 	in = pointer("foobar")
@@ -402,6 +456,8 @@ func TestValue_Pointer(t *testing.T) {
 }
 
 func TestValue_Pointer2(t *testing.T) {
+	t.Parallel()
+
 	var in, out *struct{}
 
 	in = &struct{}{}
@@ -412,6 +468,8 @@ func TestValue_Pointer2(t *testing.T) {
 }
 
 func TestValue_String(t *testing.T) {
+	t.Parallel()
+
 	var in, out string
 
 	in = "foobar"
@@ -420,6 +478,8 @@ func TestValue_String(t *testing.T) {
 }
 
 func TestValue_StringInterface(t *testing.T) {
+	t.Parallel()
+
 	var in, out any
 
 	in = "foobar-if"
@@ -435,6 +495,8 @@ func TestValue_StringInterface(t *testing.T) {
 }
 
 func TestValue_StringInterfaceWithMethods(t *testing.T) {
+	t.Parallel()
+
 	type myIf interface{ DoStuff() }
 	in := "foobar-if-methods"
 	var out myIf
@@ -449,6 +511,8 @@ func TestValue_StringInterfaceWithMethods(t *testing.T) {
 }
 
 func TestValue_SeqArray(t *testing.T) {
+	t.Parallel()
+
 	var in, out [3]string
 
 	in = [3]string{"First", "Second", "Third"}
@@ -460,6 +524,8 @@ func TestValue_SeqArray(t *testing.T) {
 }
 
 func TestValue_SeqArraySmaller(t *testing.T) {
+	t.Parallel()
+
 	var in []string
 	var out [3]string
 
@@ -472,6 +538,8 @@ func TestValue_SeqArraySmaller(t *testing.T) {
 }
 
 func TestValue_SeqArrayLarger(t *testing.T) {
+	t.Parallel()
+
 	in := []string{"First", "Second", "Third"}
 	out := [4]string{"1", "2", "3", "4"}
 
@@ -487,6 +555,8 @@ func TestValue_SeqArrayLarger(t *testing.T) {
 }
 
 func TestValue_SeqSlice(t *testing.T) {
+	t.Parallel()
+
 	var in, out []string
 
 	in = []string{"First", "Second", "Third"}
@@ -499,6 +569,8 @@ func TestValue_SeqSlice(t *testing.T) {
 }
 
 func TestValue_SeqSliceAllocated(t *testing.T) {
+	t.Parallel()
+
 	in := []string{"First", "Second", "Third"}
 	out := make([]string, len(in))
 
@@ -510,6 +582,8 @@ func TestValue_SeqSliceAllocated(t *testing.T) {
 }
 
 func TestValue_SeqSliceAllocatedSmaller(t *testing.T) {
+	t.Parallel()
+
 	in := []string{"First", "Second", "Third"}
 	out := make([]string, len(in)-1)
 
@@ -521,6 +595,8 @@ func TestValue_SeqSliceAllocatedSmaller(t *testing.T) {
 }
 
 func TestValue_SeqSliceAllocatedBigger(t *testing.T) {
+	t.Parallel()
+
 	in := []string{"First", "Second", "Third"}
 	out := make([]string, len(in)+1)
 
@@ -532,6 +608,8 @@ func TestValue_SeqSliceAllocatedBigger(t *testing.T) {
 }
 
 func TestValue_SeqInterface(t *testing.T) {
+	t.Parallel()
+
 	var in, out []any
 
 	in = []any{"First", "Second", 42.0}
@@ -544,6 +622,8 @@ func TestValue_SeqInterface(t *testing.T) {
 }
 
 func TestValue_SeqInterface2(t *testing.T) {
+	t.Parallel()
+
 	var in []any
 	var outI any
 
@@ -561,6 +641,8 @@ func TestValue_SeqInterface2(t *testing.T) {
 }
 
 func TestValue_SliceInterfaceWithMethods(t *testing.T) {
+	t.Parallel()
+
 	type myIf interface{ DoStuff() }
 	in := []any{}
 	var out myIf
@@ -575,6 +657,8 @@ func TestValue_SliceInterfaceWithMethods(t *testing.T) {
 }
 
 func TestValue_Struct(t *testing.T) {
+	t.Parallel()
+
 	type thisStruct struct {
 		Name string `minijinja:"name"`
 		Seq  []any  `minijinja:"seq"`
@@ -598,6 +682,8 @@ func TestValue_Struct(t *testing.T) {
 }
 
 func TestValue_NotMap(t *testing.T) {
+	t.Parallel()
+
 	var in int
 	var out map[int]int
 
@@ -612,6 +698,8 @@ func TestValue_NotMap(t *testing.T) {
 }
 
 func TestValue_NotNumber(t *testing.T) {
+	t.Parallel()
+
 	var in string
 	var out int
 
@@ -625,6 +713,8 @@ func TestValue_NotNumber(t *testing.T) {
 }
 
 func TestValue_NotSlice(t *testing.T) {
+	t.Parallel()
+
 	var in int
 	var out []int
 
@@ -639,6 +729,8 @@ func TestValue_NotSlice(t *testing.T) {
 }
 
 func TestValue_NotSlice2(t *testing.T) {
+	t.Parallel()
+
 	in := map[string]string{"foo": "bar"}
 	var out []string
 
@@ -651,6 +743,8 @@ func TestValue_NotSlice2(t *testing.T) {
 }
 
 func TestValue_NotString(t *testing.T) {
+	t.Parallel()
+
 	var in int
 	var out string
 
@@ -664,6 +758,8 @@ func TestValue_NotString(t *testing.T) {
 }
 
 func TestValue_NotStruct(t *testing.T) {
+	t.Parallel()
+
 	var in int
 	var out struct{}
 

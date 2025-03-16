@@ -9,6 +9,8 @@ import (
 )
 
 func TestEnvironment_AddTemplateError(t *testing.T) {
+	t.Parallel()
+
 	env := minijinja.NewEnvironment()
 	defer env.Close()
 
@@ -19,6 +21,8 @@ func TestEnvironment_AddTemplateError(t *testing.T) {
 }
 
 func TestEnvironment_RemoveTemplate(t *testing.T) {
+	t.Parallel()
+
 	env := minijinja.NewEnvironment()
 	defer env.Close()
 
@@ -36,6 +40,8 @@ func TestEnvironment_RemoveTemplate(t *testing.T) {
 }
 
 func TestEnvironment_ClearTemplates(t *testing.T) {
+	t.Parallel()
+
 	env := minijinja.NewEnvironment()
 	defer env.Close()
 
@@ -53,6 +59,8 @@ func TestEnvironment_ClearTemplates(t *testing.T) {
 }
 
 func TestEnvironment_RenderNamedString(t *testing.T) {
+	t.Parallel()
+
 	env := minijinja.NewEnvironment()
 	defer env.Close()
 
@@ -64,6 +72,8 @@ func TestEnvironment_RenderNamedString(t *testing.T) {
 }
 
 func TestEnvironment_RenderNamedStringError(t *testing.T) {
+	t.Parallel()
+
 	env := minijinja.NewEnvironment()
 	defer env.Close()
 
@@ -74,6 +84,8 @@ func TestEnvironment_RenderNamedStringError(t *testing.T) {
 }
 
 func TestEnvironment_RenderTemplate(t *testing.T) {
+	t.Parallel()
+
 	env := minijinja.NewEnvironment()
 	defer env.Close()
 
@@ -88,6 +100,8 @@ func TestEnvironment_RenderTemplate(t *testing.T) {
 }
 
 func TestEnvironment_RenderTemplateError(t *testing.T) {
+	t.Parallel()
+
 	env := minijinja.NewEnvironment()
 	defer env.Close()
 
@@ -98,6 +112,8 @@ func TestEnvironment_RenderTemplateError(t *testing.T) {
 }
 
 func TestEnvironment_EvalExpr(t *testing.T) {
+	t.Parallel()
+
 	env := minijinja.NewEnvironment()
 	defer env.Close()
 
@@ -110,6 +126,8 @@ func TestEnvironment_EvalExpr(t *testing.T) {
 }
 
 func TestEnvironment_EvalExprError(t *testing.T) {
+	t.Parallel()
+
 	env := minijinja.NewEnvironment()
 	defer env.Close()
 
@@ -121,6 +139,8 @@ func TestEnvironment_EvalExprError(t *testing.T) {
 }
 
 func TestEnvironment_EvalExprInvalid(t *testing.T) {
+	t.Parallel()
+
 	env := minijinja.NewEnvironment()
 	defer env.Close()
 

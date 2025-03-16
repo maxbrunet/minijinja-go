@@ -9,6 +9,8 @@ import (
 )
 
 func TestError(t *testing.T) {
+	t.Parallel()
+
 	env := minijinja.NewEnvironment()
 	defer env.Close()
 
@@ -34,6 +36,8 @@ func TestError(t *testing.T) {
 }
 
 func TestErrorWithoutName(t *testing.T) {
+	t.Parallel()
+
 	env := minijinja.NewEnvironment()
 	defer env.Close()
 
