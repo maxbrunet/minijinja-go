@@ -693,7 +693,7 @@ func TestValue_NotMap(t *testing.T) {
 
 	mjErr := &minijinja.DecodeTypeError{}
 	isTrue(t, errors.As(err, &mjErr))
-	isEqual(t, "number", mjErr.Value)
+	isEqual(t, "number "+strconv.Itoa(in), mjErr.Value)
 	isEqual(t, reflect.TypeFor[map[int]int](), mjErr.Type)
 }
 
@@ -724,7 +724,7 @@ func TestValue_NotSlice(t *testing.T) {
 
 	mjErr := &minijinja.DecodeTypeError{}
 	isTrue(t, errors.As(err, &mjErr))
-	isEqual(t, "number", mjErr.Value)
+	isEqual(t, "number "+strconv.Itoa(in), mjErr.Value)
 	isEqual(t, reflect.TypeFor[[]int](), mjErr.Type)
 }
 
@@ -753,7 +753,7 @@ func TestValue_NotString(t *testing.T) {
 	isTrue(t, err != nil)
 	mjErr := &minijinja.DecodeTypeError{}
 	isTrue(t, errors.As(err, &mjErr))
-	isEqual(t, "number", mjErr.Value)
+	isEqual(t, "number "+strconv.Itoa(in), mjErr.Value)
 	isEqual(t, reflect.TypeFor[string](), mjErr.Type)
 }
 
@@ -769,6 +769,6 @@ func TestValue_NotStruct(t *testing.T) {
 
 	mjErr := &minijinja.DecodeTypeError{}
 	isTrue(t, errors.As(err, &mjErr))
-	isEqual(t, "number", mjErr.Value)
+	isEqual(t, "number "+strconv.Itoa(in), mjErr.Value)
 	isEqual(t, reflect.TypeFor[struct{}](), mjErr.Type)
 }
