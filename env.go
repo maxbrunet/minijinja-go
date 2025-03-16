@@ -11,6 +11,7 @@ import "C"
 
 import (
 	"reflect"
+	"runtime"
 	"unsafe"
 )
 
@@ -59,6 +60,8 @@ func (e *Environment) SetSyntaxConfig(syntax *SyntaxConfig) error {
 	cStx := newCSyntaxConfig(syntax)
 	defer cStx.Close()
 
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
 	if !C.mj_env_set_syntax_config(e.ptr, cStx.ptr) {
 		return getError()
 	}
@@ -97,6 +100,8 @@ func (e *Environment) AddTemplate(name, source string) error {
 	cSource := C.CString(source)
 	defer C.free(unsafe.Pointer(cSource))
 
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
 	if ok := C.mj_env_add_template(e.ptr, cName, cSource); !ok {
 		return getError()
 	}
@@ -109,6 +114,8 @@ func (e *Environment) RemoveTemplate(name string) error {
 	cName := C.CString(name)
 	defer C.free(unsafe.Pointer(cName))
 
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
 	if ok := C.mj_env_remove_template(e.ptr, cName); !ok {
 		return getError()
 	}
@@ -118,6 +125,8 @@ func (e *Environment) RemoveTemplate(name string) error {
 
 // ClearTemplates clears all templates.
 func (e *Environment) ClearTemplates() error {
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
 	if ok := C.mj_env_clear_templates(e.ptr); !ok {
 		return getError()
 	}
@@ -140,6 +149,8 @@ func (e *Environment) RenderNamedString(
 	cSrc := C.CString(source)
 	defer C.free(unsafe.Pointer(cSrc))
 
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
 	out := C.mj_env_render_named_str(e.ptr, cName, cSrc, val.cVal)
 	if out == nil {
 		return "", getError()
@@ -159,6 +170,8 @@ func (e *Environment) RenderTemplate(name string, ctx any) (string, error) {
 	cName := C.CString(name)
 	defer C.free(unsafe.Pointer(cName))
 
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
 	out := C.mj_env_render_template(e.ptr, cName, val.cVal)
 	if out == nil {
 		return "", getError()
@@ -185,11 +198,14 @@ func (e *Environment) EvalExpr(expr string, ctx, data any) error {
 	cExpr := C.CString(expr)
 	defer C.free(unsafe.Pointer(cExpr))
 
+	runtime.LockOSThread()
 	cRes := C.mj_env_eval_expr(e.ptr, cExpr, val.cVal)
 	if isErrorSet() {
 		return getError()
 	}
+	runtime.UnlockOSThread()
 
 	res := &value{cVal: cRes}
+	defer res.Close()
 	return res.decode(rv.Elem())
 }

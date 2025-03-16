@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"iter"
 	"math"
+	"runtime"
 	"unsafe"
 )
 
@@ -20,6 +21,12 @@ const (
 // value represents an opaque MiniJinja value.
 type value struct {
 	cVal C.struct_mj_value
+}
+
+// Close decrements the value refcount.
+func (v *value) Close() error {
+	C.mj_value_decref(&v.cVal)
+	return nil
 }
 
 // setKey inserts a value into an object using a string key.
@@ -35,6 +42,8 @@ func (v *value) setKey(key, val any) error {
 		return err
 	}
 
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
 	if !bool(C.mj_value_set_key(&v.cVal, kVal.cVal, vVal.cVal)) {
 		return getError()
 	}
@@ -67,6 +76,8 @@ func (v *value) key(key *value) *value {
 // append appends a value to a list.
 // It returns an error if appending fails.
 func (v *value) append(val *value) error {
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
 	if !bool(C.mj_value_append(&v.cVal, val.cVal)) {
 		return getError()
 	}
@@ -107,10 +118,12 @@ type valueIter struct {
 
 // newIter creates an [iter.Seq] for the value.
 func (v *value) newIter() (iter.Seq[*value], error) {
+	runtime.LockOSThread()
 	cIter := C.mj_value_try_iter(v.cVal)
 	if cIter == nil {
 		return nil, getError()
 	}
+	runtime.UnlockOSThread()
 
 	return func(yield func(*value) bool) {
 		for {

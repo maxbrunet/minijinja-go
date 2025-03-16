@@ -7,6 +7,8 @@ import (
 )
 
 func TestSynthaxConfig(t *testing.T) {
+	t.Parallel()
+
 	env := minijinja.NewEnvironment()
 	defer env.Close()
 
