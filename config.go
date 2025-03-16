@@ -2,6 +2,8 @@ package minijinja
 
 // #cgo CFLAGS: -I${SRCDIR}/include
 // #cgo LDFLAGS: -L${SRCDIR}/lib -lminijinja_cabi
+// #cgo noescape mj_syntax_config_default
+// #cgo nocallback mj_syntax_config_default
 // #include <stdlib.h>
 // #include <minijinja.h>
 import "C"

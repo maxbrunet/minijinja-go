@@ -4,6 +4,35 @@
 package minijinja
 
 // #cgo CFLAGS: -I${SRCDIR}/include
+// #cgo noescape mj_env_add_template
+// #cgo nocallback mj_env_add_template
+// #cgo noescape mj_env_clear_templates
+// #cgo nocallback mj_env_clear_templates
+// #cgo noescape mj_env_eval_expr
+// #cgo nocallback mj_env_eval_expr
+// #cgo noescape mj_env_free
+// #cgo nocallback mj_env_free
+// #cgo nocallback mj_env_new
+// #cgo noescape mj_env_remove_template
+// #cgo nocallback mj_env_remove_template
+// #cgo noescape mj_env_render_named_str
+// #cgo nocallback mj_env_render_named_str
+// #cgo noescape mj_env_render_template
+// #cgo nocallback mj_env_render_template
+// #cgo noescape mj_env_set_keep_trailing_newline
+// #cgo nocallback mj_env_set_keep_trailing_newline
+// #cgo noescape mj_env_set_lstrip_blocks
+// #cgo nocallback mj_env_set_lstrip_blocks
+// #cgo noescape mj_env_set_recursion_limit
+// #cgo nocallback mj_env_set_recursion_limit
+// #cgo noescape mj_env_set_syntax_config
+// #cgo nocallback mj_env_set_syntax_config
+// #cgo noescape mj_env_set_trim_blocks
+// #cgo nocallback mj_env_set_trim_blocks
+// #cgo noescape mj_env_set_undefined_behavior
+// #cgo nocallback mj_env_set_undefined_behavior
+// #cgo noescape mj_str_free
+// #cgo nocallback mj_str_free
 // #cgo LDFLAGS: -L${SRCDIR}/lib -lminijinja_cabi
 // #include <stdlib.h>
 // #include <minijinja.h>

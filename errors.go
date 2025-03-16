@@ -2,6 +2,12 @@ package minijinja
 
 // #cgo CFLAGS: -I${SRCDIR}/include
 // #cgo LDFLAGS: -L${SRCDIR}/lib -lminijinja_cabi
+// #cgo nocallback mj_err_clear
+// #cgo nocallback mj_err_get_detail
+// #cgo nocallback mj_err_get_kind
+// #cgo nocallback mj_err_get_line
+// #cgo nocallback mj_err_get_template_name
+// #cgo nocallback mj_err_is_set
 // #include <stdlib.h>
 // #include <minijinja.h>
 import "C"

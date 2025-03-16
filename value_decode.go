@@ -2,6 +2,14 @@ package minijinja
 
 // #cgo CFLAGS: -I${SRCDIR}/include
 // #cgo LDFLAGS: -L${SRCDIR}/lib -lminijinja_cabi
+// #cgo noescape mj_value_as_f64
+// #cgo nocallback mj_value_as_f64
+// #cgo noescape mj_value_as_i64
+// #cgo nocallback mj_value_as_i64
+// #cgo noescape mj_value_as_u64
+// #cgo nocallback mj_value_as_u64
+// #cgo noescape mj_value_is_true
+// #cgo nocallback mj_value_is_true
 // #include <stdlib.h>
 // #include <minijinja.h>
 import "C"
