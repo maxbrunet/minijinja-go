@@ -86,6 +86,207 @@ func TestValue_BoolInterface(t *testing.T) {
 	isTrue(t, outBool)
 }
 
+func TestValue_BytesArray(t *testing.T) {
+	t.Parallel()
+
+	var in, out [3]byte
+
+	in = [3]byte{0x01, 0x02, 0x03}
+	mustTestValue(t, in, &out)
+	isEqual(t, len(in), len(out))
+	for i, e := range in {
+		isEqual(t, e, out[i])
+	}
+}
+
+func TestValue_BytesArrayInterface(t *testing.T) {
+	t.Parallel()
+
+	var in []byte
+	var out [4]any
+
+	in = []byte{0x01, 0x02, 0x03}
+	err := testValue(t, in, &out)
+	isEqual(t, nil, err)
+
+	isEqual(t, len(in)+1, len(out))
+	for i, e := range in {
+		b, ok := out[i].(byte)
+		isTrue(t, ok)
+		isEqual(t, e, b)
+	}
+}
+
+func TestValue_BytesArraySmaller(t *testing.T) {
+	t.Parallel()
+
+	var in []byte
+	var out [3]byte
+
+	in = []byte{0x01, 0x02, 0x03, 0x04}
+	err := testValue(t, in, &out)
+	isEqual(t, nil, err)
+	for i, e := range out {
+		isEqual(t, in[i], e)
+	}
+}
+
+func TestValue_BytesArrayLarger(t *testing.T) {
+	t.Parallel()
+
+	in := []byte{0x01, 0x02, 0x03}
+	out := [4]byte{0x01, 0x02, 0x03, 0x04}
+
+	err := testValue(t, in, &out)
+	isEqual(t, nil, err)
+	for i, e := range out {
+		if i < len(in) {
+			isEqual(t, in[i], e)
+			continue
+		}
+		isEqual(t, 0, e)
+	}
+}
+
+func TestValue_BytesArrayInterfaceWithMethods2(t *testing.T) {
+	t.Parallel()
+
+	type myIf interface{ DoStuff() }
+	in := []byte{0x01, 0x2, 0x03}
+	var out [4]myIf
+
+	err := testValue(t, in, &out)
+	isTrue(t, err != nil)
+
+	mjErr := &minijinja.DecodeTypeError{}
+	isTrue(t, errors.As(err, &mjErr))
+	isEqual(t, "bytes", mjErr.Value)
+	isEqual(t, reflect.TypeFor[[4]myIf](), mjErr.Type)
+}
+
+func TestValue_BytesInterface(t *testing.T) {
+	t.Parallel()
+
+	var in []byte
+	var out []any
+
+	in = []byte{0x01, 0x02, 0x03}
+	err := testValue(t, in, &out)
+	isEqual(t, nil, err)
+
+	isEqual(t, len(in), len(out))
+	for i, e := range in {
+		b, ok := out[i].(byte)
+		isTrue(t, ok)
+		isEqual(t, e, b)
+	}
+}
+
+func TestValue_BytesInterface2(t *testing.T) {
+	t.Parallel()
+
+	var in []byte
+	var outI any
+
+	in = []byte{0x01, 0x02, 0x03}
+	err := testValue(t, in, &outI)
+	isEqual(t, nil, err)
+
+	out, ok := outI.([]byte)
+	isTrue(t, ok)
+
+	isEqual(t, len(in), len(out))
+	for i, e := range in {
+		isEqual(t, e, out[i])
+	}
+}
+
+func TestValue_BytesSlice(t *testing.T) {
+	t.Parallel()
+
+	var in, out []byte
+
+	in = []byte{0x01, 0x02, 0x03}
+
+	mustTestValue(t, in, &out)
+	isEqual(t, len(in), len(out))
+	for i, e := range in {
+		isEqual(t, e, out[i])
+	}
+}
+
+func TestValue_BytesSliceAllocated(t *testing.T) {
+	t.Parallel()
+
+	in := []byte{0x01, 0x02, 0x03}
+	out := make([]byte, len(in))
+
+	mustTestValue(t, in, &out)
+	isEqual(t, len(in), len(out))
+	for i, e := range in {
+		isEqual(t, e, out[i])
+	}
+}
+
+func TestValue_BytesSliceAllocatedSmaller(t *testing.T) {
+	t.Parallel()
+
+	in := []byte{0x01, 0x02, 0x03}
+	out := make([]byte, len(in)-1)
+
+	mustTestValue(t, in, &out)
+	isEqual(t, len(in), len(out))
+	for i, e := range in {
+		isEqual(t, e, out[i])
+	}
+}
+
+func TestValue_BytesSliceAllocatedBigger(t *testing.T) {
+	t.Parallel()
+
+	in := []byte{0x01, 0x02, 0x03}
+	out := make([]byte, len(in)+1)
+
+	mustTestValue(t, in, &out)
+	isEqual(t, len(in), len(out))
+	isEqual(t, cap(in)+1, cap(out))
+	for i, e := range in {
+		isEqual(t, e, out[i])
+	}
+}
+
+func TestValue_BytesSliceInterfaceWithMethods(t *testing.T) {
+	t.Parallel()
+
+	type myIf interface{ DoStuff() }
+	in := []byte{}
+	var out myIf
+
+	err := testValue(t, in, &out)
+	isTrue(t, err != nil)
+
+	mjErr := &minijinja.DecodeTypeError{}
+	isTrue(t, errors.As(err, &mjErr))
+	isEqual(t, "bytes", mjErr.Value)
+	isEqual(t, reflect.TypeFor[myIf](), mjErr.Type)
+}
+
+func TestValue_BytesSliceInterfaceWithMethods2(t *testing.T) {
+	t.Parallel()
+
+	type myIf interface{ DoStuff() }
+	in := []byte{0x01, 0x2, 0x03}
+	var out []myIf
+
+	err := testValue(t, in, &out)
+	isTrue(t, err != nil)
+
+	mjErr := &minijinja.DecodeTypeError{}
+	isTrue(t, errors.As(err, &mjErr))
+	isEqual(t, "bytes", mjErr.Value)
+	isEqual(t, reflect.TypeFor[[]myIf](), mjErr.Type)
+}
+
 func TestValue_NumberFloat32(t *testing.T) {
 	t.Parallel()
 
@@ -602,6 +803,7 @@ func TestValue_SeqSliceAllocatedBigger(t *testing.T) {
 
 	mustTestValue(t, in, &out)
 	isEqual(t, len(in), len(out))
+	isEqual(t, cap(in)+1, cap(out))
 	for i, e := range in {
 		isEqual(t, e, out[i])
 	}

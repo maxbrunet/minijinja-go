@@ -17,6 +17,7 @@ import "C"
 import (
 	"fmt"
 	"reflect"
+	"unsafe"
 )
 
 // decode decodes a value and stores the result into the variable pointed by rv.
@@ -36,6 +37,8 @@ func (v *value) decode(rv reflect.Value) error {
 	switch kind {
 	case valueKindBool:
 		return v.decodeBool(rv)
+	case valueKindBytes:
+		return v.decodeBytes(rv)
 	case valueKindNumber:
 		return v.decodeNumber(rv)
 	case valueKindPlain, valueKindString:
@@ -46,7 +49,7 @@ func (v *value) decode(rv reflect.Value) error {
 		return v.decodeMap(rv)
 	case valueKindNone, valueKindUndefined:
 		return nil
-	case valueKindBytes, valueKindInvalid:
+	case valueKindInvalid:
 	}
 
 	return &DecodeTypeError{
@@ -69,6 +72,99 @@ func (v *value) decodeBool(rv reflect.Value) error {
 	}
 
 	return &DecodeTypeError{Value: v.kind().String(), Type: rv.Type()}
+}
+
+func (v *value) decodeBytes(rv reflect.Value) error {
+	length := C.uintptr_t(0)
+	charPtr := C.mj_value_as_bytes(v.cVal, &length)
+	bytes := C.GoBytes(unsafe.Pointer(charPtr), C.int(length))
+
+	switch rv.Kind() {
+	case reflect.Array:
+		return v.decodeBytesToArray(rv, bytes)
+	case reflect.Slice:
+		return v.decodeBytesToSlice(rv, bytes)
+	case reflect.Interface:
+		if rv.NumMethod() == 0 {
+			return v.decodeBytesToSlice(rv, bytes)
+		}
+	}
+
+	return &DecodeTypeError{Value: v.kind().String(), Type: rv.Type()}
+}
+
+func (v *value) decodeBytesToArray(rv reflect.Value, bytes []byte) error {
+	rt := rv.Type().Elem().Kind()
+	for i, b := range bytes {
+		if i >= rv.Len() {
+			// Ran out of fixed array: skip.
+			return nil
+		}
+
+		switch rt {
+		case reflect.Uint8:
+			rv.Index(i).SetUint(uint64(b))
+		case reflect.Interface:
+			e := rv.Index(i)
+			if e.NumMethod() == 0 {
+				e.Set(reflect.ValueOf(b))
+				continue
+			}
+			fallthrough
+		default:
+			return &DecodeTypeError{Value: v.kind().String(), Type: rv.Type()}
+		}
+	}
+
+	if len(bytes) < rv.Len() {
+		for i := len(bytes); i < rv.Len(); i++ {
+			// zero remainder of array
+			rv.Index(i).SetZero()
+		}
+	}
+
+	return nil
+}
+
+func (v *value) decodeBytesToSlice(rv reflect.Value, bytes []byte) error {
+	var s reflect.Value
+	if rv.Kind() == reflect.Interface {
+		if rv.NumMethod() > 0 {
+			return &DecodeTypeError{Value: v.kind().String(), Type: rv.Type()}
+		}
+		s = reflect.New(reflect.TypeOf(bytes)).Elem()
+	} else {
+		if rv.IsNil() && rv.Type().Elem().Kind() == reflect.Uint8 {
+			rv.SetBytes(bytes)
+			return nil
+		}
+		s = rv
+	}
+
+	if s.Cap() < len(bytes) {
+		s.Grow(len(bytes) - s.Cap())
+	}
+	s.SetLen(len(bytes))
+
+	st := s.Type().Elem().Kind()
+	for i, b := range bytes {
+		switch st {
+		case reflect.Uint8:
+			s.Index(i).SetUint(uint64(b))
+		case reflect.Interface:
+			e := s.Index(i)
+			if e.NumMethod() == 0 {
+				e.Set(reflect.ValueOf(b))
+				continue
+			}
+			fallthrough
+		default:
+			return &DecodeTypeError{Value: v.kind().String(), Type: s.Type()}
+		}
+	}
+
+	rv.Set(s)
+	return nil
 }
 
 func (v *value) decodeMap(rv reflect.Value) error {
