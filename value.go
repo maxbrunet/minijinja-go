@@ -2,6 +2,30 @@ package minijinja
 
 // #cgo CFLAGS: -I${SRCDIR}/include
 // #cgo LDFLAGS: -L${SRCDIR}/lib -lminijinja_cabi
+// #cgo noescape mj_value_append
+// #cgo nocallback mj_value_append
+// #cgo noescape mj_value_decref
+// #cgo nocallback mj_value_decref
+// #cgo noescape mj_value_get_by_index
+// #cgo nocallback mj_value_get_by_index
+// #cgo noescape mj_value_get_by_str
+// #cgo nocallback mj_value_get_by_str
+// #cgo noescape mj_value_get_by_value
+// #cgo nocallback mj_value_get_by_value
+// #cgo noescape mj_value_get_kind
+// #cgo nocallback mj_value_get_kind
+// #cgo noescape mj_value_iter_free
+// #cgo nocallback mj_value_iter_free
+// #cgo noescape mj_value_iter_next
+// #cgo nocallback mj_value_iter_next
+// #cgo noescape mj_value_len
+// #cgo nocallback mj_value_len
+// #cgo noescape mj_value_set_key
+// #cgo nocallback mj_value_set_key
+// #cgo noescape mj_value_to_str
+// #cgo nocallback mj_value_to_str
+// #cgo noescape mj_value_try_iter
+// #cgo nocallback mj_value_try_iter
 // #include <stdlib.h>
 // #include <minijinja.h>
 import "C"

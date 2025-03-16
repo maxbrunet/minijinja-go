@@ -2,6 +2,18 @@ package minijinja
 
 // #cgo CFLAGS: -I${SRCDIR}/include
 // #cgo LDFLAGS: -L${SRCDIR}/lib -lminijinja_cabi
+// #cgo nocallback mj_value_new_bool
+// #cgo nocallback mj_value_new_f32
+// #cgo nocallback mj_value_new_f64
+// #cgo nocallback mj_value_new_i32
+// #cgo nocallback mj_value_new_i64
+// #cgo nocallback mj_value_new_list
+// #cgo nocallback mj_value_new_none
+// #cgo nocallback mj_value_new_object
+// #cgo noescape mj_value_new_string
+// #cgo nocallback mj_value_new_string
+// #cgo nocallback mj_value_new_u32
+// #cgo nocallback mj_value_new_u64
 // #include <stdlib.h>
 // #include <minijinja.h>
 import "C"
