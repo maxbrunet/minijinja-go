@@ -8,9 +8,7 @@ import "C"
 
 import (
 	"fmt"
-	"math"
 	"reflect"
-	"strconv"
 )
 
 // decode decodes a value and stores the result into the variable pointed by rv.
@@ -44,16 +42,12 @@ func (v *value) decode(rv reflect.Value) error {
 	}
 
 	return &DecodeTypeError{
-		Value: "unsupported " + v.kind().String(),
-		Type:  rv.Type(),
+		Value: "unsupported " + v.kind().String(), Type: rv.Type(),
 	}
 }
 
 func (v *value) decodeBool(rv reflect.Value) error {
-	b, err := strconv.ParseBool(v.String())
-	if err != nil {
-		panic(fmt.Errorf("failed to parse bool value: %w", err))
-	}
+	b := bool(C.mj_value_is_true(v.cVal))
 
 	switch rv.Kind() {
 	case reflect.Bool:
@@ -152,123 +146,25 @@ func (v *value) decodeNone(_ reflect.Value) error {
 
 func (v *value) decodeNumber(rv reflect.Value) error {
 	switch rv.Kind() {
-	case reflect.Float32:
-		return v.decodeNumberToFloat32(rv)
-	case reflect.Float64, reflect.Interface:
-		return v.decodeNumberToFloat64(rv)
-	case reflect.Int:
-		return v.decodeNumberToInt(rv)
-	case reflect.Int32:
-		return v.decodeNumberToInt32(rv)
-	case reflect.Int64:
-		return v.decodeNumberToInt64(rv)
-	case reflect.Uint:
-		return v.decodeNumberToUint(rv)
-	case reflect.Uint32:
-		return v.decodeNumberToUint32(rv)
-	case reflect.Uint64:
-		return v.decodeNumberToUint64(rv)
-	}
-
-	return &DecodeTypeError{Value: v.kind().String(), Type: rv.Type()}
-}
-
-func (v *value) decodeNumberToFloat32(rv reflect.Value) error {
-	s := v.String()
-	n, err := strconv.ParseFloat(s, 32)
-	if err != nil {
-		panic(fmt.Errorf("failed to parse float32 value: %w", err))
-	}
-
-	rv.SetFloat(n)
-	return nil
-}
-
-func (v *value) decodeNumberToFloat64(rv reflect.Value) error {
-	s := v.String()
-	n, err := strconv.ParseFloat(s, 64)
-	if err != nil {
-		panic(fmt.Errorf("failed to parse float64 value: %w", err))
-	}
-
-	switch rv.Kind() {
-	case reflect.Float64:
-		rv.SetFloat(n)
+	case reflect.Float32, reflect.Float64:
+		rv.SetFloat(float64(C.mj_value_as_f64(v.cVal)))
+		return nil
+	case reflect.Int, reflect.Int32, reflect.Int64:
+		rv.SetInt(int64(C.mj_value_as_i64(v.cVal)))
 		return nil
 	case reflect.Interface:
 		if rv.NumMethod() == 0 {
-			rv.Set(reflect.ValueOf(n))
+			rv.Set(reflect.ValueOf(float64(C.mj_value_as_f64(v.cVal))))
 			return nil
 		}
+	case reflect.Uint, reflect.Uint32, reflect.Uint64:
+		rv.SetUint(uint64(C.mj_value_as_u64(v.cVal)))
+		return nil
 	}
 
-	return &DecodeTypeError{Value: v.kind().String() + " " + s, Type: rv.Type()}
-}
-
-func (v *value) decodeNumberToInt(rv reflect.Value) error {
-	switch math.MaxInt {
-	case math.MaxInt32:
-		return v.decodeNumberToInt32(rv)
-	case math.MaxInt64:
-		return v.decodeNumberToInt64(rv)
+	return &DecodeTypeError{
+		Value: fmt.Sprintf("%s %s", v.kind(), v), Type: rv.Type(),
 	}
-
-	panic(fmt.Sprintf("unexpected max int: %d", math.MaxInt))
-}
-
-func (v *value) decodeNumberToInt32(rv reflect.Value) error {
-	s := v.String()
-	n, err := strconv.ParseInt(s, 10, 32)
-	if err != nil {
-		panic(fmt.Errorf("failed to parse int32 value: %w", err))
-	}
-
-	rv.SetInt(n)
-	return nil
-}
-
-func (v *value) decodeNumberToInt64(rv reflect.Value) error {
-	s := v.String()
-	n, err := strconv.ParseInt(s, 10, 64)
-	if err != nil {
-		panic(fmt.Errorf("failed to parse int64 value: %w", err))
-	}
-
-	rv.SetInt(n)
-	return nil
-}
-
-func (v *value) decodeNumberToUint(rv reflect.Value) error {
-	switch uint(math.MaxUint) {
-	case math.MaxUint32:
-		return v.decodeNumberToUint32(rv)
-	case math.MaxUint64:
-		return v.decodeNumberToUint64(rv)
-	}
-
-	panic(fmt.Sprintf("unexpected max uint: %d", uint(math.MaxUint)))
-}
-
-func (v *value) decodeNumberToUint32(rv reflect.Value) error {
-	s := v.String()
-	n, err := strconv.ParseUint(s, 10, 32)
-	if err != nil {
-		panic(fmt.Errorf("failed to parse uint32 value: %w", err))
-	}
-
-	rv.SetUint(n)
-	return nil
-}
-
-func (v *value) decodeNumberToUint64(rv reflect.Value) error {
-	s := v.String()
-	n, err := strconv.ParseUint(s, 10, 64)
-	if err != nil {
-		panic(fmt.Errorf("failed to parse uint64 value: %w", err))
-	}
-
-	rv.SetUint(n)
-	return nil
 }
 
 func (v *value) decodeSeq(rv reflect.Value) error {
