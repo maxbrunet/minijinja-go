@@ -26,8 +26,10 @@ import (
 )
 
 // newValue creates a new value.
-func newValue(x any) (*value, error) {
+func newValue(x any) (*value, error) { //nolint:cyclop
 	switch x := x.(type) {
+	case []byte:
+		return newValueBytes(x)
 	case bool:
 		return newValueBool(x), nil
 	case float32:
@@ -55,6 +57,9 @@ func newValue(x any) (*value, error) {
 	rv := reflect.ValueOf(x)
 	switch rv.Kind() {
 	case reflect.Array:
+		if rv.Type().Elem().Kind() == reflect.Uint8 {
+			return newValueBytes(x)
+		}
 		return newValueSeq(x)
 	case reflect.Map:
 		if rv.IsNil() {
@@ -76,6 +81,34 @@ func newValue(x any) (*value, error) {
 	}
 
 	return nil, &UnsupportedTypeError{Type: rv.Type()}
+}
+
+func newValueBytes(x any) (*value, error) {
+	rv := reflect.ValueOf(x)
+	var ptr unsafe.Pointer
+	var length int
+
+	if rv.Kind() == reflect.Array {
+		if rv.Type().Elem().Kind() != reflect.Uint8 {
+			return nil, &UnsupportedTypeError{Type: rv.Type()}
+		}
+
+		rvPtr := reflect.New(rv.Type())
+		rvPtr.Elem().Set(rv)
+		ptr = rvPtr.UnsafePointer()
+		length = rv.Len()
+	} else {
+		bytes, ok := x.([]byte)
+		if !ok {
+			return nil, &UnsupportedTypeError{Type: rv.Type()}
+		}
+
+		ptr = C.CBytes(bytes)
+		defer C.free(ptr)
+		length = len(bytes)
+	}
+
+	return &value{cVal: C.mj_value_new_bytes((*C.char)(ptr), C.uintptr_t(length))}, nil
 }
 
 func newValueBool(x bool) *value {
