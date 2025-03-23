@@ -16,6 +16,7 @@ import (
 	"fmt"
 	"reflect"
 	"strconv"
+	"unsafe"
 )
 
 // ErrorKind represents the kind of error that occurred.
@@ -110,10 +111,14 @@ type Error struct {
 
 func getError() *Error {
 	defer clearError()
+	detail := C.mj_err_get_detail()
+	defer C.free(unsafe.Pointer(detail))
+	name := C.mj_err_get_template_name()
+	defer C.free(unsafe.Pointer(name))
 	return &Error{
 		Kind:   ErrorKind(C.mj_err_get_kind()),
-		Detail: C.GoString(C.mj_err_get_detail()),
-		Name:   C.GoString(C.mj_err_get_template_name()),
+		Detail: C.GoString(detail),
+		Name:   C.GoString(name),
 		Line:   uint32(C.mj_err_get_line()),
 	}
 }
