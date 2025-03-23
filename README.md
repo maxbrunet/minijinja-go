@@ -15,7 +15,7 @@ For an example look into [example_test.go](example_test.go).
 go get github.com/maxbrunet/minijinja-go/v2@latest
 ```
 
-Build `minijinja-cabi` library (Linux and macOS instructions only):
+Build `minijinja-cabi` library (Linux and macOS instructions):
 
 ```shell
 MJGO_VERSION="$(go list -m all | awk '/github.com\/maxbrunet\/minijinja-go\/v2/{print $2}')"
@@ -33,6 +33,8 @@ chmod -w "${MJGO_PATH}"
 # If using vendored packages, simply run:
 # bash vendor/github.com/maxbrunet/minijinja-go/v2/build.sh
 ```
+
+On Windows, the `build.ps1` can be used similarly.
 
 The dynamic library must be available during runtime of any dependent program.
 
