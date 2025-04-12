@@ -1,13 +1,11 @@
-run:
-  timeout: 2m
+version: "2"
 linters:
-  enable-all: true
+  default: all
   disable:
-    # Deprectated
-    - tenv
     # Inappropriate
     - depguard
     - exhaustruct
+    - funcorder
     - funlen
     - gochecknoglobals
     - gochecknoinits
@@ -16,29 +14,40 @@ linters:
     - paralleltest
     - varnamelen
     - wsl
-linters-settings:
-  cyclop:
-    max-complexity: 20
-  gci:
-    sections:
-      - standard
-      - default
-      - prefix(github.com/maxbrunet/minijinja-go)
-  gofumpt:
-    extra-rules: true
-  goimports:
-    local-prefixes: github.com/maxbrunet/minijinja-go
+  settings:
+    cyclop:
+      max-complexity: 20
+    exhaustive:
+      ignore-enum-types: ^reflect\.Kind$
+  exclusions:
+    generated: strict
+    rules:
+      - linters:
+          - errcheck
+        # Taken from the default exclusions in v1
+        text: Error return value of .((os\.)?std(out|err)\..*|.*Close|.*Flush|os\.Remove(All)?|.*print(f|ln)?|os\.(Un)?Setenv). is not checked
+      - linters:
+          - wrapcheck
+        path: _test\.go
+formatters:
+  enable:
+    - gci
+    - gofmt
+    - gofumpt
+    - goimports
+  settings:
+    gci:
+      sections:
+        - standard
+        - default
+        - prefix(github.com/maxbrunet/minijinja-go)
+    gofumpt:
+      extra-rules: true
+    goimports:
+      local-prefixes:
+        - github.com/maxbrunet/minijinja-go
+  exclusions:
+    generated: strict
 issues:
-  max-same-issues: 0
   max-issues-per-linter: 0
-  exclude-use-default: false
-  exclude-rules:
-    - linters:
-        - errcheck
-      # Taken from the default exclusions (that are otherwise disabled above).
-      text: Error return value of .((os\.)?std(out|err)\..*|.*Close|.*Flush|os\.Remove(All)?|.*print(f|ln)?|os\.(Un)?Setenv). is not checked
-    - path: _test\.go
-      linters:
-        - wrapcheck
-output:
-  sort-results: true
+  max-same-issues: 0
