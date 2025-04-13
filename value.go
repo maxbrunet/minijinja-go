@@ -113,7 +113,13 @@ func (v *value) append(val *value) error {
 func (v *value) len() int {
 	n := uint64(C.mj_value_len(v.cVal))
 	if n > uint64(math.MaxInt) {
-		panic(fmt.Sprintf("value length (%d) exceeds max int (%d)", n, math.MaxInt))
+		panic(
+			fmt.Sprintf(
+				"value length (%d) exceeds max int (%d)",
+				n,
+				math.MaxInt,
+			),
+		)
 	}
 
 	return int(n)

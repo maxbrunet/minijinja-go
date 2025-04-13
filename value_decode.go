@@ -15,9 +15,15 @@ package minijinja
 import "C"
 
 import (
+	"encoding"
 	"fmt"
 	"reflect"
 	"unsafe"
+)
+
+var (
+	binaryUnmarshalerType = reflect.TypeFor[encoding.BinaryUnmarshaler]()
+	textUnmarshalerType   = reflect.TypeFor[encoding.TextUnmarshaler]()
 )
 
 // decode decodes a value and stores the result into the variable pointed by rv.
@@ -78,6 +84,23 @@ func (v *value) decodeBytes(rv reflect.Value) error {
 	length := C.uintptr_t(0)
 	charPtr := C.mj_value_as_bytes(v.cVal, &length)
 	bytes := C.GoBytes(unsafe.Pointer(charPtr), C.int(length))
+
+	rt := rv.Type()
+	if reflect.PointerTo(rt).Implements(binaryUnmarshalerType) {
+		uv := reflect.New(rt)
+		if u, ok := uv.Interface().(encoding.BinaryUnmarshaler); ok {
+			err := u.UnmarshalBinary(bytes)
+			if err != nil {
+				return &UnmarshalerError{
+					Type:       rt,
+					Err:        err,
+					sourceFunc: "UnmarshalBinary",
+				}
+			}
+			rv.Set(uv.Elem())
+			return nil
+		}
+	}
 
 	switch rv.Kind() {
 	case reflect.Array:
@@ -244,10 +267,6 @@ func (v *value) decodeMapToStruct(rv reflect.Value) error {
 	return nil
 }
 
-func (v *value) decodeNone(_ reflect.Value) error {
-	return nil
-}
-
 func (v *value) decodeNumber(rv reflect.Value) error {
 	switch rv.Kind() {
 	case reflect.Float32, reflect.Float64:
@@ -337,6 +356,23 @@ func (v *value) decodeSeqToSlice(rv reflect.Value) error {
 
 func (v *value) decodeString(rv reflect.Value) error {
 	s := v.String()
+
+	rt := rv.Type()
+	if reflect.PointerTo(rt).Implements(textUnmarshalerType) {
+		uv := reflect.New(rt)
+		if u, ok := uv.Interface().(encoding.TextUnmarshaler); ok {
+			err := u.UnmarshalText([]byte(s))
+			if err != nil {
+				return &UnmarshalerError{
+					Type:       rt,
+					Err:        err,
+					sourceFunc: "UnmarshalText",
+				}
+			}
+			rv.Set(uv.Elem())
+			return nil
+		}
+	}
 
 	switch rv.Kind() {
 	case reflect.String:

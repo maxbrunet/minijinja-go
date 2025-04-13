@@ -47,6 +47,8 @@ formatters:
     goimports:
       local-prefixes:
         - github.com/maxbrunet/minijinja-go
+    golines:
+      max-len: 80
   exclusions:
     generated: strict
 issues:

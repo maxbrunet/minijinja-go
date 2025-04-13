@@ -2,6 +2,7 @@ package minijinja_test
 
 import (
 	"errors"
+	"fmt"
 	"math"
 	"reflect"
 	"strconv"
@@ -151,9 +152,9 @@ func TestValue_BytesArrayLarger(t *testing.T) {
 func TestValue_BytesArrayInterfaceWithMethods2(t *testing.T) {
 	t.Parallel()
 
-	type myIf interface{ DoStuff() }
+	type anIf interface{ DoWork() }
 	in := []byte{0x01, 0x2, 0x03}
-	var out [4]myIf
+	var out [4]anIf
 
 	err := testValue(t, in, &out)
 	isTrue(t, err != nil)
@@ -161,7 +162,87 @@ func TestValue_BytesArrayInterfaceWithMethods2(t *testing.T) {
 	mjErr := &minijinja.DecodeTypeError{}
 	isTrue(t, errors.As(err, &mjErr))
 	isEqual(t, "bytes", mjErr.Value)
-	isEqual(t, reflect.TypeFor[[4]myIf](), mjErr.Type)
+	isEqual(t, reflect.TypeFor[[4]anIf](), mjErr.Type)
+}
+
+var errABinaryMarshaler = errors.New("aBinaryMarshaler error")
+
+type aBinaryMarshaler struct {
+	data         []byte
+	marshalFails bool
+}
+
+func (b *aBinaryMarshaler) MarshalBinary() ([]byte, error) {
+	if b.marshalFails {
+		return nil, errABinaryMarshaler
+	}
+	return b.data, nil
+}
+
+func (b *aBinaryMarshaler) UnmarshalBinary(data []byte) error {
+	b.data = data
+	return nil
+}
+
+func TestValue_StringFromBinaryMarshaler(t *testing.T) {
+	t.Parallel()
+
+	var in, out *aBinaryMarshaler
+	in = &aBinaryMarshaler{data: []byte{0x1, 0x2, 0x3}}
+
+	mustTestValue(t, in, &out)
+	isTrue(t, out != nil)
+	isEqual(t, len(in.data), len(out.data))
+	for i, e := range in.data {
+		isEqual(t, e, out.data[i])
+	}
+}
+
+func TestValue_StringFromBinaryMarshalerWithMarshalError(t *testing.T) {
+	t.Parallel()
+
+	var in, out *aBinaryMarshaler
+	in = &aBinaryMarshaler{marshalFails: true}
+
+	err := testValue(t, in, &out)
+	isTrue(t, err != nil)
+
+	mjErr := &minijinja.MarshalerError{}
+	isTrue(t, errors.As(err, &mjErr))
+	isTrue(t, errors.Is(mjErr.Unwrap(), errABinaryMarshaler))
+	isEqual(t, reflect.TypeFor[*aBinaryMarshaler](), mjErr.Type)
+	isEqual(t, fmt.Sprintf(
+		"minijinja: error calling MarshalBinary for type %s: %s",
+		reflect.TypeFor[*aBinaryMarshaler](),
+		errABinaryMarshaler,
+	), mjErr.Error())
+}
+
+type aBinaryUnmarshalerWithError struct{}
+
+func (t *aBinaryUnmarshalerWithError) UnmarshalBinary([]byte) error {
+	return errABinaryMarshaler
+}
+
+func TestValue_StringFromBinaryMarshalerWithUnmarshalError(t *testing.T) {
+	t.Parallel()
+
+	var in *aBinaryMarshaler
+	var out *aBinaryUnmarshalerWithError
+	in = &aBinaryMarshaler{}
+
+	err := testValue(t, in, &out)
+	isTrue(t, err != nil)
+
+	mjErr := &minijinja.UnmarshalerError{}
+	isTrue(t, errors.As(err, &mjErr))
+	isTrue(t, errors.Is(mjErr.Unwrap(), errABinaryMarshaler))
+	isEqual(t, reflect.TypeFor[aBinaryUnmarshalerWithError](), mjErr.Type)
+	isEqual(t, fmt.Sprintf(
+		"minijinja: error calling UnmarshalBinary for type %s: %s",
+		reflect.TypeFor[aBinaryUnmarshalerWithError](),
+		errABinaryMarshaler,
+	), mjErr.Error())
 }
 
 func TestValue_BytesInterface(t *testing.T) {
@@ -258,9 +339,9 @@ func TestValue_BytesSliceAllocatedBigger(t *testing.T) {
 func TestValue_BytesSliceInterfaceWithMethods(t *testing.T) {
 	t.Parallel()
 
-	type myIf interface{ DoStuff() }
+	type anIf interface{ DoWork() }
 	in := []byte{}
-	var out myIf
+	var out anIf
 
 	err := testValue(t, in, &out)
 	isTrue(t, err != nil)
@@ -268,15 +349,15 @@ func TestValue_BytesSliceInterfaceWithMethods(t *testing.T) {
 	mjErr := &minijinja.DecodeTypeError{}
 	isTrue(t, errors.As(err, &mjErr))
 	isEqual(t, "bytes", mjErr.Value)
-	isEqual(t, reflect.TypeFor[myIf](), mjErr.Type)
+	isEqual(t, reflect.TypeFor[anIf](), mjErr.Type)
 }
 
 func TestValue_BytesSliceInterfaceWithMethods2(t *testing.T) {
 	t.Parallel()
 
-	type myIf interface{ DoStuff() }
+	type anIf interface{ DoWork() }
 	in := []byte{0x01, 0x2, 0x03}
-	var out []myIf
+	var out []anIf
 
 	err := testValue(t, in, &out)
 	isTrue(t, err != nil)
@@ -284,7 +365,7 @@ func TestValue_BytesSliceInterfaceWithMethods2(t *testing.T) {
 	mjErr := &minijinja.DecodeTypeError{}
 	isTrue(t, errors.As(err, &mjErr))
 	isEqual(t, "bytes", mjErr.Value)
-	isEqual(t, reflect.TypeFor[[]myIf](), mjErr.Type)
+	isEqual(t, reflect.TypeFor[[]anIf](), mjErr.Type)
 }
 
 func TestValue_NumberFloat32(t *testing.T) {
@@ -357,9 +438,9 @@ func TestValue_NumberInterface(t *testing.T) {
 func TestValue_NumberInterfaceWithMethods(t *testing.T) {
 	t.Parallel()
 
-	type myIf interface{ DoStuff() }
+	type anIf interface{ DoWork() }
 	in := 123
-	var out myIf
+	var out anIf
 
 	err := testValue(t, in, &out)
 	isTrue(t, err != nil)
@@ -367,7 +448,7 @@ func TestValue_NumberInterfaceWithMethods(t *testing.T) {
 	mjErr := &minijinja.DecodeTypeError{}
 	isTrue(t, errors.As(err, &mjErr))
 	isEqual(t, "number "+strconv.Itoa(in), mjErr.Value)
-	isEqual(t, reflect.TypeFor[myIf](), mjErr.Type)
+	isEqual(t, reflect.TypeFor[anIf](), mjErr.Type)
 }
 
 func TestValue_NumberUint(t *testing.T) {
@@ -531,9 +612,9 @@ func TestValue_MapInterface2(t *testing.T) {
 func TestValue_MapInterfaceWithMethods(t *testing.T) {
 	t.Parallel()
 
-	type myIf interface{ DoStuff() }
+	type anIf interface{ DoWork() }
 	in := map[any]any{}
-	var out myIf
+	var out anIf
 
 	err := testValue(t, in, &out)
 	isTrue(t, err != nil)
@@ -541,7 +622,7 @@ func TestValue_MapInterfaceWithMethods(t *testing.T) {
 	mjErr := &minijinja.DecodeTypeError{}
 	isTrue(t, errors.As(err, &mjErr))
 	isEqual(t, "map", mjErr.Value)
-	isEqual(t, reflect.TypeFor[myIf](), mjErr.Type)
+	isEqual(t, reflect.TypeFor[anIf](), mjErr.Type)
 }
 
 func TestValue_NonePointer(t *testing.T) {
@@ -581,9 +662,9 @@ func TestValue_NoneInterface(t *testing.T) {
 func TestValue_NoneInterfaceWithMethods(t *testing.T) {
 	t.Parallel()
 
-	type myIf interface{ DoStuff() }
+	type anIf interface{ DoWork() }
 	var in any
-	var out myIf
+	var out anIf
 
 	err := testValue(t, in, &out)
 	isEqual(t, nil, err)
@@ -678,6 +759,83 @@ func TestValue_String(t *testing.T) {
 	isEqual(t, in, out)
 }
 
+var errATextMarshaler = errors.New("aTextMarshaler error")
+
+type aTextMarshaler struct {
+	text         string
+	marshalFails bool
+}
+
+func (t *aTextMarshaler) MarshalText() ([]byte, error) {
+	if t.marshalFails {
+		return nil, errATextMarshaler
+	}
+	return []byte(t.text), nil
+}
+
+func (t *aTextMarshaler) UnmarshalText(text []byte) error {
+	t.text = string(text)
+	return nil
+}
+
+func TestValue_StringFromTextMarshaler(t *testing.T) {
+	t.Parallel()
+
+	var in, out *aTextMarshaler
+	in = &aTextMarshaler{text: "foobar"}
+
+	mustTestValue(t, in, &out)
+	isTrue(t, out != nil)
+	isEqual(t, in.text, out.text)
+}
+
+func TestValue_StringFromTextMarshalerWithMarshalError(t *testing.T) {
+	t.Parallel()
+
+	var in, out *aTextMarshaler
+	in = &aTextMarshaler{marshalFails: true}
+
+	err := testValue(t, in, &out)
+	isTrue(t, err != nil)
+
+	mjErr := &minijinja.MarshalerError{}
+	isTrue(t, errors.As(err, &mjErr))
+	isTrue(t, errors.Is(mjErr.Unwrap(), errATextMarshaler))
+	isEqual(t, reflect.TypeFor[*aTextMarshaler](), mjErr.Type)
+	isEqual(t, fmt.Sprintf(
+		"minijinja: error calling MarshalText for type %s: %s",
+		reflect.TypeFor[*aTextMarshaler](),
+		errATextMarshaler,
+	), mjErr.Error())
+}
+
+type aTextUnmarshalerWithError struct{}
+
+func (t *aTextUnmarshalerWithError) UnmarshalText([]byte) error {
+	return errATextMarshaler
+}
+
+func TestValue_StringFromTextMarshalerWithUnmarshalError(t *testing.T) {
+	t.Parallel()
+
+	var in *aTextMarshaler
+	var out *aTextUnmarshalerWithError
+	in = &aTextMarshaler{}
+
+	err := testValue(t, in, &out)
+	isTrue(t, err != nil)
+
+	mjErr := &minijinja.UnmarshalerError{}
+	isTrue(t, errors.As(err, &mjErr))
+	isTrue(t, errors.Is(mjErr.Unwrap(), errATextMarshaler))
+	isEqual(t, reflect.TypeFor[aTextUnmarshalerWithError](), mjErr.Type)
+	isEqual(t, fmt.Sprintf(
+		"minijinja: error calling UnmarshalText for type %s: %s",
+		reflect.TypeFor[aTextUnmarshalerWithError](),
+		errATextMarshaler,
+	), mjErr.Error())
+}
+
 func TestValue_StringInterface(t *testing.T) {
 	t.Parallel()
 
@@ -698,9 +856,9 @@ func TestValue_StringInterface(t *testing.T) {
 func TestValue_StringInterfaceWithMethods(t *testing.T) {
 	t.Parallel()
 
-	type myIf interface{ DoStuff() }
+	type anIf interface{ DoWork() }
 	in := "foobar-if-methods"
-	var out myIf
+	var out anIf
 
 	err := testValue(t, in, &out)
 	isTrue(t, err != nil)
@@ -708,7 +866,7 @@ func TestValue_StringInterfaceWithMethods(t *testing.T) {
 	mjErr := &minijinja.DecodeTypeError{}
 	isTrue(t, errors.As(err, &mjErr))
 	isEqual(t, "string", mjErr.Value)
-	isEqual(t, reflect.TypeFor[myIf](), mjErr.Type)
+	isEqual(t, reflect.TypeFor[anIf](), mjErr.Type)
 }
 
 func TestValue_SeqArray(t *testing.T) {
@@ -845,9 +1003,9 @@ func TestValue_SeqInterface2(t *testing.T) {
 func TestValue_SliceInterfaceWithMethods(t *testing.T) {
 	t.Parallel()
 
-	type myIf interface{ DoStuff() }
+	type anIf interface{ DoWork() }
 	in := []any{}
-	var out myIf
+	var out anIf
 
 	err := testValue(t, in, &out)
 	isTrue(t, err != nil)
@@ -855,7 +1013,7 @@ func TestValue_SliceInterfaceWithMethods(t *testing.T) {
 	mjErr := &minijinja.DecodeTypeError{}
 	isTrue(t, errors.As(err, &mjErr))
 	isEqual(t, "seq", mjErr.Value)
-	isEqual(t, reflect.TypeFor[myIf](), mjErr.Type)
+	isEqual(t, reflect.TypeFor[anIf](), mjErr.Type)
 }
 
 func TestValue_Struct(t *testing.T) {

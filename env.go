@@ -119,7 +119,10 @@ const (
 
 // SetUndefinedBehavior reconfigures the undefined behavior.
 func (e *Environment) SetUndefinedBehavior(behavior UndefinedBehavior) {
-	C.mj_env_set_undefined_behavior(e.ptr, C.enum_mj_undefined_behavior(behavior))
+	C.mj_env_set_undefined_behavior(
+		e.ptr,
+		C.enum_mj_undefined_behavior(behavior),
+	)
 }
 
 // AddTemplate registers a template with the environment.
