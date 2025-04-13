@@ -19,6 +19,7 @@ package minijinja
 import "C"
 
 import (
+	"encoding"
 	"fmt"
 	"math"
 	"reflect"
@@ -28,6 +29,10 @@ import (
 // newValue creates a new value.
 func newValue(x any) (*value, error) { //nolint:cyclop
 	switch x := x.(type) {
+	case encoding.TextMarshaler:
+		return newValueStringFromTextMarshaler(x)
+	case encoding.BinaryMarshaler:
+		return newValueBytesFromBinaryMarshaler(x)
 	case []byte:
 		return newValueBytes(x)
 	case bool:
@@ -83,6 +88,10 @@ func newValue(x any) (*value, error) { //nolint:cyclop
 	return nil, &UnsupportedTypeError{Type: rv.Type()}
 }
 
+func newValueBool(x bool) *value {
+	return &value{cVal: C.mj_value_new_bool(C.bool(x))}
+}
+
 func newValueBytes(x any) (*value, error) {
 	rv := reflect.ValueOf(x)
 	var ptr unsafe.Pointer
@@ -108,11 +117,28 @@ func newValueBytes(x any) (*value, error) {
 		length = len(bytes)
 	}
 
-	return &value{cVal: C.mj_value_new_bytes((*C.char)(ptr), C.uintptr_t(length))}, nil
+	return &value{
+		cVal: C.mj_value_new_bytes((*C.char)(ptr), C.uintptr_t(length)),
+	}, nil
 }
 
-func newValueBool(x bool) *value {
-	return &value{cVal: C.mj_value_new_bool(C.bool(x))}
+func newValueBytesFromBinaryMarshaler(
+	x encoding.BinaryMarshaler,
+) (*value, error) {
+	b, err := x.MarshalBinary()
+	if err != nil {
+		return nil, &MarshalerError{
+			Type:       reflect.TypeOf(x),
+			Err:        err,
+			sourceFunc: "MarshalBinary",
+		}
+	}
+	ptr := C.CBytes(b)
+	defer C.free(ptr)
+
+	return &value{
+		cVal: C.mj_value_new_bytes((*C.char)(ptr), C.uintptr_t(len(b))),
+	}, nil
 }
 
 func newValueFloat32(x float32) *value {
@@ -200,6 +226,21 @@ func newValueString(s string) *value {
 	defer C.free(unsafe.Pointer(cStr))
 
 	return &value{cVal: C.mj_value_new_string(cStr)}
+}
+
+func newValueStringFromTextMarshaler(x encoding.TextMarshaler) (*value, error) {
+	s, err := x.MarshalText()
+	if err != nil {
+		return nil, &MarshalerError{
+			Type:       reflect.TypeOf(x),
+			Err:        err,
+			sourceFunc: "MarshalText",
+		}
+	}
+	cStr := C.CString(string(s))
+	defer C.free(unsafe.Pointer(cStr))
+
+	return &value{cVal: C.mj_value_new_string(cStr)}, nil
 }
 
 func newValueStruct(x any) (*value, error) {

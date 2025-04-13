@@ -162,7 +162,7 @@ func (e *DecodeTypeError) Error() string {
 	return fmt.Sprintf(
 		"minijinja: cannot decode %s into Go value of type %s",
 		e.Value,
-		e.Type.String(),
+		e.Type,
 	)
 }
 
@@ -183,6 +183,46 @@ func (e *InvalidEvalExprError) Error() string {
 
 	return fmt.Sprintf("minijinja: EvalExpr(nil %s)", e.Type)
 }
+
+// A MarshalerError represents an error from calling a
+// [encoding.TextMarshaler.MarshalText] method.
+type MarshalerError struct {
+	Type       reflect.Type
+	Err        error
+	sourceFunc string
+}
+
+func (e *MarshalerError) Error() string {
+	return fmt.Sprintf(
+		"minijinja: error calling %s for type %s: %s",
+		e.sourceFunc,
+		e.Type,
+		e.Err,
+	)
+}
+
+// Unwrap returns the underlying error.
+func (e *MarshalerError) Unwrap() error { return e.Err }
+
+// A UnmarshalerError represents an error from calling a
+// [encoding.TextUnmarshaler.UnmarshalText] method.
+type UnmarshalerError struct {
+	Type       reflect.Type
+	Err        error
+	sourceFunc string
+}
+
+func (e *UnmarshalerError) Error() string {
+	return fmt.Sprintf(
+		"minijinja: error calling %s for type %s: %s",
+		e.sourceFunc,
+		e.Type,
+		e.Err,
+	)
+}
+
+// Unwrap returns the underlying error.
+func (e *UnmarshalerError) Unwrap() error { return e.Err }
 
 // A UnsupportedTypeError is returned when attempting to encode an unsupported
 // value type.
