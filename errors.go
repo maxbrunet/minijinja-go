@@ -107,6 +107,8 @@ type Error struct {
 	Name string
 	// The line number where the error occurred.
 	Line uint32
+	// All known debug info on format.
+	DebugInfo string
 }
 
 func getError() *Error {
@@ -115,11 +117,14 @@ func getError() *Error {
 	defer C.free(unsafe.Pointer(detail))
 	name := C.mj_err_get_template_name()
 	defer C.free(unsafe.Pointer(name))
+	info := C.mj_err_get_debug_info()
+	defer C.free(unsafe.Pointer(info))
 	return &Error{
-		Kind:   ErrorKind(C.mj_err_get_kind()),
-		Detail: C.GoString(detail),
-		Name:   C.GoString(name),
-		Line:   uint32(C.mj_err_get_line()),
+		Kind:      ErrorKind(C.mj_err_get_kind()),
+		Detail:    C.GoString(detail),
+		Name:      C.GoString(name),
+		Line:      uint32(C.mj_err_get_line()),
+		DebugInfo: C.GoString(info),
 	}
 }
 
@@ -129,13 +134,19 @@ func (e *Error) Error() string {
 	}
 
 	if e.Name != "" {
-		return fmt.Sprintf(
+		s := fmt.Sprintf(
 			"minijinja: %s: %s (in %s:%d)",
 			e.Kind,
 			e.Detail,
 			e.Name,
 			e.Line,
 		)
+
+		if e.DebugInfo != "" {
+			s = fmt.Sprintf("%s\n%s", s, e.DebugInfo)
+		}
+
+		return s
 	}
 
 	return fmt.Sprintf("minijinja: %s: %s", e.Kind, e.Detail)
@@ -184,7 +195,8 @@ func (e *InvalidEvalExprError) Error() string {
 	return fmt.Sprintf("minijinja: EvalExpr(nil %s)", e.Type)
 }
 
-// A MarshalerError represents an error from calling a
+// A MarshalerError represents an error from calling an
+// [encoding.BinaryMarshaler.MarshalBinary] or
 // [encoding.TextMarshaler.MarshalText] method.
 type MarshalerError struct {
 	Type       reflect.Type
@@ -204,7 +216,8 @@ func (e *MarshalerError) Error() string {
 // Unwrap returns the underlying error.
 func (e *MarshalerError) Unwrap() error { return e.Err }
 
-// A UnmarshalerError represents an error from calling a
+// A UnmarshalerError represents an error from calling an
+// [encoding.BinaryUnmarshaler.UnmarshalBinary] or
 // [encoding.TextUnmarshaler.UnmarshalText] method.
 type UnmarshalerError struct {
 	Type       reflect.Type

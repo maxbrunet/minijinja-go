@@ -12,6 +12,7 @@ func ExampleNewEnvironment() {
 		panic("could not create environment")
 	}
 	defer env.Close()
+	env.SetDebug(true)
 
 	templateSource := `Hello {{ name }}!
 {%- for item in seq %}

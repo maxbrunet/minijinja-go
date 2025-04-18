@@ -68,6 +68,11 @@ func (e *Environment) Close() error {
 	return nil
 }
 
+// SetDebug enables or disables debug mode.
+func (e *Environment) SetDebug(on bool) {
+	C.mj_env_set_debug(e.ptr, C.bool(on))
+}
+
 // SetKeepTrailingNewline preserves the trailing newline when rendering
 // templates.
 func (e *Environment) SetKeepTrailingNewline(on bool) {
