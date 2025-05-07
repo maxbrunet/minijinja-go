@@ -11,35 +11,58 @@
     "customManagers:githubActionsVersions",
     "helpers:pinGitHubActionDigestsToSemver"
   ],
-  "assignees": ["maxbrunet"],
+  "assignees": [
+    "maxbrunet"
+  ],
   "internalChecksFilter": "strict",
   "platformAutomerge": true,
-  "postUpdateOptions": ["gomodTidy", "gomodUpdateImportPaths"],
+  "postUpdateOptions": [
+    "gomodTidy",
+    "gomodUpdateImportPaths"
+  ],
   "rangeStrategy": "pin",
   "packageRules": [
     {
       "description": "One week stability period for Go and Rust packages",
-      "matchDatasources": ["go", "crate"],
+      "matchDatasources": [
+        "go",
+        "crate"
+      ],
       "minimumReleaseAge": "7 days"
     },
     {
       "description": "Customize golang updates commit message",
-      "matchDatasources": ["golang-version"],
-      "matchPackageNames": ["go"],
+      "matchDatasources": [
+        "golang-version"
+      ],
+      "matchPackageNames": [
+        "go"
+      ],
       "commitMessageTopic": "Go"
     },
     {
       "description": "Customize rust updates commit message",
-      "matchPackageNames": ["rust"],
+      "matchPackageNames": [
+        "rust"
+      ],
       "commitMessageTopic": "rust"
     },
     {
-      "matchDepTypes": ["dependencies", "require"],
+      "matchDepTypes": [
+        "dependencies",
+        "require"
+      ],
       "semanticCommitType": "build"
     },
     {
-      "matchPackageNames": ["go"],
-      "matchUpdateTypes": ["patch", "minor", "major"],
+      "matchPackageNames": [
+        "go"
+      ],
+      "matchUpdateTypes": [
+        "patch",
+        "minor",
+        "major"
+      ],
       "semanticCommitType": "build"
     }
   ],
@@ -47,16 +70,24 @@
     {
       "description": "Update Golang in .go-version file",
       "customType": "regex",
-      "fileMatch": ["(^|/)\\.go-version$"],
-      "matchStrings": ["^\\s*(?<currentValue>.+?)\\s*$"],
+      "managerFilePatterns": [
+        "/(^|/)\\.go-version$/"
+      ],
+      "matchStrings": [
+        "^\\s*(?<currentValue>.+?)\\s*$"
+      ],
       "depNameTemplate": "go",
       "datasourceTemplate": "golang-version"
     },
     {
       "description": "Update Rust stable version in rust-toolchain.toml",
       "customType": "regex",
-      "fileMatch": ["(^|/)rust-toolchain\\.toml$"],
-      "matchStrings": ["channel\\s*=\\s*('|\")(?<currentValue>.+?)('|\")\\s"],
+      "managerFilePatterns": [
+        "/(^|/)rust-toolchain\\.toml$/"
+      ],
+      "matchStrings": [
+        "channel\\s*=\\s*('|\")(?<currentValue>.+?)('|\")\\s"
+      ],
       "depNameTemplate": "rust",
       "packageNameTemplate": "rust-lang/rust",
       "datasourceTemplate": "github-releases"
