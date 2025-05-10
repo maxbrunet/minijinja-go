@@ -47,7 +47,7 @@
     {
       "description": "Update Golang in .go-version file",
       "customType": "regex",
-      "fileMatch": ["(^|/)\\.go-version$"],
+      "managerFilePatterns": ["/(^|/)\\.go-version$/"],
       "matchStrings": ["^\\s*(?<currentValue>.+?)\\s*$"],
       "depNameTemplate": "go",
       "datasourceTemplate": "golang-version"
@@ -55,7 +55,7 @@
     {
       "description": "Update Rust stable version in rust-toolchain.toml",
       "customType": "regex",
-      "fileMatch": ["(^|/)rust-toolchain\\.toml$"],
+      "managerFilePatterns": ["/(^|/)rust-toolchain\\.toml$/"],
       "matchStrings": ["channel\\s*=\\s*('|\")(?<currentValue>.+?)('|\")\\s"],
       "depNameTemplate": "rust",
       "packageNameTemplate": "rust-lang/rust",
