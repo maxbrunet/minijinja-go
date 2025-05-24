@@ -4,7 +4,7 @@ version = "0.0.0"
 edition = "2021"
 
 [dependencies]
-minijinja-cabi = { git = "https://github.com/mitsuhiko/minijinja.git", rev = "442d7dace5f5e44c2c437dfc5757cbb3f4915a8f" }
+minijinja-cabi = { git = "https://github.com/mitsuhiko/minijinja.git", tag = "2.10.2" }
 
 [profile.release]
 lto = true
