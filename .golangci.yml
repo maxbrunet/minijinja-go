@@ -23,11 +23,9 @@ linters:
       ignore-enum-types: ^reflect\.Kind$
   exclusions:
     generated: strict
+    presets:
+      - std-error-handling
     rules:
-      - linters:
-          - errcheck
-        # Taken from the default exclusions in v1
-        text: Error return value of .((os\.)?std(out|err)\..*|.*Close|.*Flush|os\.Remove(All)?|.*print(f|ln)?|os\.(Un)?Setenv). is not checked
       - linters:
           - wrapcheck
         path: _test\.go
