@@ -23,17 +23,6 @@
       "minimumReleaseAge": "7 days"
     },
     {
-      "description": "Customize golang updates commit message",
-      "matchDatasources": ["golang-version"],
-      "matchPackageNames": ["go"],
-      "commitMessageTopic": "Go"
-    },
-    {
-      "description": "Customize rust updates commit message",
-      "matchPackageNames": ["rust"],
-      "commitMessageTopic": "rust"
-    },
-    {
       "matchDepTypes": ["dependencies", "require"],
       "semanticCommitType": "build"
     },
