@@ -45,14 +45,6 @@
   ],
   "customManagers": [
     {
-      "description": "Update Golang in .go-version file",
-      "customType": "regex",
-      "managerFilePatterns": ["/(^|/)\\.go-version$/"],
-      "matchStrings": ["^\\s*(?<currentValue>.+?)\\s*$"],
-      "depNameTemplate": "go",
-      "datasourceTemplate": "golang-version"
-    },
-    {
       "description": "Update Rust stable version in rust-toolchain.toml",
       "customType": "regex",
       "managerFilePatterns": ["/(^|/)rust-toolchain\\.toml$/"],
