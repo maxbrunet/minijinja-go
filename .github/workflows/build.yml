@@ -50,19 +50,16 @@ jobs:
       - name: Set up Rust cache
         uses: Swatinem/rust-cache@f13886b937689c021905a6b90929199931d60db1 # v2.8.1
 
-      - name: Build minijinja-cabi (Unix)
+      - name: Build minijinja-cabi
+        run: go run ./hack/build-minijinja-cabi --mod-dir=.
+
+      - name: Add Library to search path (Unix)
         if: runner.os != 'windows'
-        run: |
-          ./build.sh
+        run: echo 'LD_LIBRARY_PATH=lib' >>"${GITHUB_ENV}"
 
-          echo 'LD_LIBRARY_PATH=lib' >>"${GITHUB_ENV}"
-
-      - name: Build minijinja-cabi (Windows)
+      - name: Add Library to search path (Windows)
         if: runner.os == 'windows'
-        run: |
-           ./build.ps1
-
-           Add-Content -Path $env:GITHUB_PATH -Value (Resolve-Path 'lib').Path
+        run: Add-Content -Path $env:GITHUB_PATH -Value (Resolve-Path 'lib').Path
 
       - name: Test
         run: go test -v ./...
@@ -90,7 +87,7 @@ jobs:
         uses: Swatinem/rust-cache@f13886b937689c021905a6b90929199931d60db1 # v2.8.1
 
       - name: Build minijinja-cabi
-        run: ./build.sh
+        run: go run ./hack/build-minijinja-cabi --mod-dir=.
 
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@e7fa5ac41e1cf5b7d48e45e42232ce7ada589601 # v9.1.0
@@ -122,7 +119,7 @@ jobs:
         uses: Swatinem/rust-cache@f13886b937689c021905a6b90929199931d60db1 # v2.8.1
 
       - name: Build minijinja-cabi
-        run: ./build.sh
+        run: go run ./hack/build-minijinja-cabi --mod-dir=.
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@e12f0178983d466f2f6028f5cc7a6d786fd97f4b # v4.31.4

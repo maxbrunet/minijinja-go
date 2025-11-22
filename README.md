@@ -15,9 +15,11 @@ For an example look into [example_test.go](example_test.go).
 go get github.com/maxbrunet/minijinja-go/v2@latest
 ```
 
-Build `minijinja-cabi` library (Linux and macOS instructions):
+Build `minijinja-cabi` library:
 
 ```shell
+go get -tool github.com/maxbrunet/minijinja-go/v2/hack/build-minijinja-cabi
+
 MJGO_VERSION="$(go list -m all | awk '/github.com\/maxbrunet\/minijinja-go\/v2/{print $2}')"
 MJGO_PATH="$(go env GOMODCACHE)/github.com/maxbrunet/minijinja-go/v2@${MJGO_VERSION}"
 
@@ -25,16 +27,14 @@ MJGO_PATH="$(go env GOMODCACHE)/github.com/maxbrunet/minijinja-go/v2@${MJGO_VERS
 chmod +w "${MJGO_PATH}"
 
 # Build
-bash "${MJGO_PATH}/build.sh"
+go tool build-minijinja-cabi --mod-dir="${MJGO_PATH}"
 
 # Remove rewrite permission (optional)
 chmod -w "${MJGO_PATH}"
 
-# If using vendored packages, simply run:
-# bash vendor/github.com/maxbrunet/minijinja-go/v2/build.sh
+# If using vendored modules, simply run:
+# go tool build-minijinja-cabi --mod-dir=vendor/github.com/maxbrunet/minijinja-go/v2
 ```
-
-On Windows, the `build.ps1` can be used similarly.
 
 The dynamic library must be available during runtime of any dependent program.
 
