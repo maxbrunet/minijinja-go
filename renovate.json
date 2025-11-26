@@ -5,6 +5,7 @@
     ":automergeDigest",
     ":automergeMinor",
     ":maintainLockFilesMonthly",
+    ":preserveSemverRanges",
     ":rebaseStalePrs",
     ":semanticCommits",
     ":semanticCommitScope(deps)",
