@@ -155,7 +155,7 @@ func (v *value) decodeBytesToSlice(rv reflect.Value, bytes []byte) error {
 		if rv.NumMethod() > 0 {
 			return &DecodeTypeError{Value: v.kind().String(), Type: rv.Type()}
 		}
-		s = reflect.New(reflect.TypeOf(bytes)).Elem()
+		s = reflect.New(reflect.TypeFor[[]byte]()).Elem()
 	} else {
 		if rv.IsNil() && rv.Type().Elem().Kind() == reflect.Uint8 {
 			rv.SetBytes(bytes)
