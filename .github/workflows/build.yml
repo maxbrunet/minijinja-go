@@ -14,7 +14,7 @@ concurrency:
 
 env:
   # renovate: datasource=github-releases depName=golangci/golangci-lint
-  GOLANGCI_LINT_VERSION: v2.7.2
+  GOLANGCI_LINT_VERSION: v2.8.0
   RUSTFLAGS: --deny warnings
   RUSTDOCFLAGS: --deny warnings
 
