@@ -16,8 +16,8 @@ checksum = "38d1115007560874e373613744c6fba374c17688327a71c1476d1a5954cc857b"
 
 [[package]]
 name = "minijinja"
-version = "2.14.0"
-source = "git+https://github.com/mitsuhiko/minijinja.git?tag=2.14.0#135a5f5618ca42037f2d3ebbd0f7a19023eaa958"
+version = "2.15.1"
+source = "git+https://github.com/mitsuhiko/minijinja.git?tag=2.15.1#96caba21cce05400d9194949480c405f5ecce5cb"
 dependencies = [
  "aho-corasick",
  "memo-map",
@@ -27,8 +27,8 @@ dependencies = [
 
 [[package]]
 name = "minijinja-cabi"
-version = "2.14.0"
-source = "git+https://github.com/mitsuhiko/minijinja.git?tag=2.14.0#135a5f5618ca42037f2d3ebbd0f7a19023eaa958"
+version = "2.15.1"
+source = "git+https://github.com/mitsuhiko/minijinja.git?tag=2.15.1#96caba21cce05400d9194949480c405f5ecce5cb"
 dependencies = [
  "minijinja",
 ]
