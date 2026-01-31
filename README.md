@@ -1,3 +1,6 @@
+> ⚠️ **ABANDONED**: This experiment has been abandoned in favor of the Go port of Minijinja:
+> [github.com/mitsuhiko/minijinja/minijinja-go/v2](https://pkg.go.dev/github.com/mitsuhiko/minijinja/minijinja-go/v2)
+
 # minijinja-go
 
 [![License](https://img.shields.io/github/license/maxbrunet/minijinja-go)](https://github.com/maxbrunet/minijinja-go/blob/main/LICENSE)
